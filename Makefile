@@ -1,7 +1,7 @@
 CC= g++
-CFLAGS= -I /usr/include/freetype2 -g -O0 -Wall --pedantic `freetype-config --cflags`
+CFLAGS= -g -Wall --pedantic `pkg-config --cflags freetype2`
 LDFLAGS= `icu-config --ldflags`
-LIBS= -lcairo -lharfbuzz -lharfbuzz-icu `freetype-config --libs`
+LIBS= -lcairo -lharfbuzz -lharfbuzz-icu `pkg-config --libs freetype2`
 
 all: hb-text-renderer
 
