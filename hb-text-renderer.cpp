@@ -67,9 +67,6 @@ int main(int argc, char **argv)
     hb_buffer_set_language(buf, language);
 
     hb_buffer_add_utf8(buf, text, -1, 0 ,-1);
-    hb_feature_t feature;
-    //hb_feature_from_string("-kern", -1, &feature);
-    //hb_shape(hb_font, buf, &feature, 1);
     hb_shape(hb_font, buf, NULL, 0);
 
     unsigned int length = hb_buffer_get_length(buf);
@@ -110,13 +107,14 @@ int main(int argc, char **argv)
     }
     
     double margin = 0.5* point_size;
-    double width  = point_size;
+    double width  = 2*point_size;
     double height = 2*point_size;
     for(unsigned int i=0; i<length; i++)
     {
         width  +=  pos[i].x_advance >> 6;
         height -=  (pos[i].y_advance + pos[i].y_offset) >> 6;
     }
+    std::cout<<width<<" "<<height<<std::endl;
 
     // cairo
     cairo_surface_t *cairo_surface;
@@ -137,15 +135,36 @@ int main(int argc, char **argv)
     double base = (point_size - font_extents.height)/2 + font_extents.ascent;
 
     cairo_glyph_t *cairo_glyphs = cairo_glyph_allocate(length);
+
     cur_x = 0.0;
-    cur_y = -base;
+    cur_y = 0.0;
+    if(HB_DIRECTION_IS_HORIZONTAL (hb_buffer_get_direction(buf)))
+    {
+        if(direction==HB_DIRECTION_LTR)
+            cur_x = 0.0;
+        else
+            cur_x = 2*point_size - margin;
+
+        cur_y = -base;
+    }
+    else
+    {
+        cur_x = 0.0;
+        cur_y = -margin;
+    }
+
     for(unsigned int i=0; i <length; i++)
     {
         cairo_glyphs[i].index = info[i].codepoint;
         cairo_glyphs[i].x = cur_x + pos[i].x_offset /64.0;
         cairo_glyphs[i].y = -cur_y - pos[i].y_offset /64.0;
         
-        cur_x += pos[i].x_advance >>6;
+        if(HB_DIRECTION_IS_HORIZONTAL (hb_buffer_get_direction(buf)))
+            cur_x += pos[i].x_advance >>6;
+        else
+            cur_y += pos[i].y_advance >>6;
+
+        std::cout<<"x: "<<cairo_glyphs[i].x<<"\ty: "<<cairo_glyphs[i].y<<"\tcur_x: "<<cur_x<<"\tcur_y: "<<cur_y<<std::endl;
     }
 
     cairo_show_glyphs (cr, cairo_glyphs, length);
