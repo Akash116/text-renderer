@@ -6,7 +6,11 @@ Usage
     make
     hb-text-renderer fontfile.ttf textToRender
 
-Screenshot
+Samples
 ==========
 
-![Screenshot](./text.png?raw=true)
+![en](./en.png)
+
+![ar](./ar.png)
+
+![ch](./ch.png)
