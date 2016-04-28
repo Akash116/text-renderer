@@ -38,7 +38,8 @@ static hb_blob_t *get_table_from_tag(hb_face_t* /*unused*/, hb_tag_t tag, void *
 
 int main(int argc, char **argv)
 {
-    const char *text = argv[2];
+    //const char *text = argv[2];
+    const char *text = "á";
     const char *fontname = argv[1];
     //pre defined values for debugging
     const hb_direction_t direction = HB_DIRECTION_LTR;
@@ -67,6 +68,7 @@ int main(int argc, char **argv)
     hb_buffer_set_language(buf, language);
 
     hb_buffer_add_utf8(buf, text, -1, 0 ,-1);
+    hb_buffer_set_cluster_level(buf, HB_BUFFER_CLUSTER_LEVEL_MONOTONE_CHARACTERS);
     hb_shape(hb_font, buf, NULL, 0);
 
     unsigned int length = hb_buffer_get_length(buf);
@@ -86,7 +88,7 @@ int main(int argc, char **argv)
         //hb_ot_get_glyph_name not defined
         hb_font_get_glyph_name (hb_font, glyph_id, glyphname, sizeof(glyphname));
 
-        std::cout<<"Glyph: "<<glyphname<<" Cluster: "<<cluster<<"\tx_adv: "<<x_adv<<"\ty_adv: "<<y_adv<<"\tx_off: "<<x_offset<<"\ty_off: "<<y_offset<<std::endl;
+        std::cout<<"Glyph: "<<glyph_id<<" Cluster: "<<cluster<<"\tx_adv: "<<x_adv<<"\ty_adv: "<<y_adv<<"\tx_off: "<<x_offset<<"\ty_off: "<<y_offset<<std::endl;
     }
     
     double cur_x=0,cur_y=0;
@@ -111,7 +113,7 @@ int main(int argc, char **argv)
     double height = 2*point_size;
     for(unsigned int i=0; i<length; i++)
     {
-        width  +=  pos[i].x_advance >> 6;
+        width  +=  (pos[i].x_advance + pos[i].x_offset) >> 6;
         height -=  (pos[i].y_advance + pos[i].y_offset) >> 6;
     }
     std::cout<<width<<" "<<height<<std::endl;
