@@ -1,5 +1,6 @@
 # text-renderer
 Simple text renderer using HarfBuzz
+This is just a sandbox program I wrote to explore the HarfBuzz API. It does not follow any coding guidelines.
 
 Usage
 =========
